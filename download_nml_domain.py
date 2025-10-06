@@ -19,7 +19,7 @@ import params
 ############################################
 ### Parameters
 
-remote = copy.deepcopy(params.file['remote']['project'])
+
 
 
 ###########################################
@@ -30,6 +30,8 @@ def dl_nml_domain():
     """
 
     """
+    remote = copy.deepcopy(params.file['remote']['project'])
+    
     params.data_path.mkdir(parents=True, exist_ok=True)
 
     proj_path = pathlib.Path(remote.pop('path'))

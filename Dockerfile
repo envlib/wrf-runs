@@ -1,12 +1,14 @@
 FROM mullenkamp/wrf-wps-debian:1.0
 
-WORKDIR /
+WORKDIR /app
 
-COPY ./pyproject.toml ./
-RUN uv sync --no-cache --no-install-project --no-default-groups
+# RUN uv tool install toml-cli
 
-COPY *.py ./
+COPY requirements.txt .
+RUN uv pip install --no-cache-dir -r requirements.txt
 
-CMD ["uv", "run", "python", "-u", "main.py"]
+COPY *.py .
 
-# CMD ["/bin/bash"]
+# CMD ["uv", "run", "python", "-u", "main.py"]
+
+CMD ["/bin/bash"]

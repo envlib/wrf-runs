@@ -11,6 +11,7 @@ from download_era5 import dl_era5
 from run_era5_to_int import run_era5_to_int
 from run_metgrid import run_metgrid
 from run_real import run_real
+from monitor_wrf import monitor_wrf
 
 import params
 
@@ -35,19 +36,25 @@ if sentry['tags']:
 ########################################
 ### Run sequence
 
+print('-- Downloading namelists...')
 dl_check = dl_nml_domain()
 
 start_date, end_date, hour_interval = check_set_params()
 
+print('-- Downloading ERA5 data...')
 era5_check = dl_era5(start_date, end_date)
 
+print('-- Processing ERA5 to WPS Int...')
 run_era5_to_int(start_date, end_date, hour_interval)
 
+print('-- Running metgrid.exe...')
 run_metgrid()
 
+print('-- Running real.exe...')
 run_real()
 
-
+print('-- Running WRF...')
+monitor_wrf()
 
 
 

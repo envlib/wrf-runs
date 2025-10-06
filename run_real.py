@@ -11,10 +11,9 @@ import shlex
 import subprocess
 import pendulum
 import sentry_sdk
+import shutil
 
 import params
-
-
 
 ############################################
 ### Parameters
@@ -41,6 +40,20 @@ def run_real():
     if 'SUCCESS COMPLETE REAL_EM INIT' in results_str:
         for path in params.data_path.glob('met_em.*.nc'):
             path.unlink()
+
+        run_path = params.data_path.joinpath('run')
+        run_path.mkdir(exist_ok=True)
+        wrf_run_path = params.wrf_path.joinpath('run')
+        cmd_str = f'ln -sf {wrf_run_path}/* .'
+        # cmd_list = shlex.split(cmd_str)
+        p = subprocess.run(cmd_str, shell=True, capture_output=False, text=False, check=False, cwd=run_path)
+        for path in params.data_path.glob('wrf*'):
+            file_name = path.name
+            path.rename(run_path.joinpath(file_name))
+
+        cmd_str = f'ln -sf {params.wrf_nml_path} .'
+        p = subprocess.run(cmd_str, shell=True, capture_output=False, text=False, check=False, cwd=run_path)
+
         return True
     else:
         scope = sentry_sdk.get_current_scope()

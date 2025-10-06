@@ -24,13 +24,19 @@ with open(base_path.joinpath("parameters.toml"), "rb") as f:
 ##############################################
 ### Assign executables
 
-wrf_path = pathlib.Path(file['executables']['wrf_path'])
+if 'wrf_path' in file['executables']:
+    wrf_path = pathlib.Path(file['executables']['wrf_path'])
+else:
+    wrf_path = pathlib.Path('/WRF')
 
 wrf_exe = wrf_path.joinpath('main/wrf.exe')
 
 real_exe = wrf_path.joinpath('main/real.exe')
 
-wps_path = pathlib.Path(file['executables']['wps_path'])
+if 'wps_path' in file['executables']:
+    wps_path = pathlib.Path(file['executables']['wps_path'])
+else:
+    wps_path = pathlib.Path('/WPS')
 
 geogrid_exe = wps_path.joinpath('geogrid.exe')
 
@@ -40,11 +46,13 @@ metgrid_exe = wps_path.joinpath('metgrid.exe')
 ###########################################
 ### Others
 
-data_path = pathlib.Path(file['data_path'])
+if 'data_path' in file:
+    data_path = pathlib.Path(file['data_path'])
+else:
+    data_path = pathlib.Path('/data')
 
 wps_nml_path = data_path.joinpath('namelist.wps')
 wrf_nml_path = data_path.joinpath('namelist.input')
-
 
 ##########################################
 ### ERA5

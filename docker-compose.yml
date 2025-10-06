@@ -5,7 +5,6 @@ services:
     image: mullenkamp/wrf-runs:1.0
     # user: ${MY_UID}:${MY_GID}
     volumes:
-        - "~/git/wrf-repos/wrf-testing/preprocessing/geogrid/parameters.toml:/parameters.toml"
-        - '~/git/wrf-repos/wrf-testing/namelists/namelist_uc_v02b.wps:/namelist.wps'
-        - '~/Build_WRF/WPS_GEOG:/WPS_GEOG'
+        - "~/git/wrf-repos/wrf-runs/parameters.toml:/app/parameters.toml"
+        # - '~/data/wrf/tests/test1:/data'
 

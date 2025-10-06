@@ -18,7 +18,6 @@ import params
 ############################################
 ### Parameters
 
-remote = copy.deepcopy(params.file['remote']['era5'])
 
 
 ###########################################
@@ -29,6 +28,8 @@ def dl_era5(start_date, end_date):
     """
 
     """
+    remote = copy.deepcopy(params.file['remote']['era5'])
+
     era5_path = pathlib.Path(remote.pop('path'))
 
     name = 'era5'
