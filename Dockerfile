@@ -9,6 +9,6 @@ RUN uv pip install --no-cache-dir -r requirements.txt
 
 COPY *.py .
 
-# CMD ["uv", "run", "python", "-u", "main.py"]
+CMD ["uv", "run", "python", "-u", "main.py"]
 
-CMD ["/bin/bash"]
+# CMD ["/bin/bash"]
