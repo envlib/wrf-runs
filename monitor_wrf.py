@@ -61,28 +61,27 @@ def select_files_to_dl(out_files, min_files):
     """
 
     """
-    dl_files = []
+    files = []
     for grp, file_paths in out_files.items():
         n_files = len(file_paths)
         file_paths.sort(reverse=True)
         if n_files > min_files:
-            dl_files.extend(file_paths[min_files:n_files])
+            files.extend(file_paths[min_files:n_files])
 
-    return dl_files
+    return files
 
 
-def dl_files(dl_files, run_path, name, out_path, config_path):
+def dl_files(files, run_path, name, out_path, config_path):
     """
 
     """
-    dl_files_str = '\n'.join(dl_files)
+    files_str = '\n'.join([os.path.split(p)[-1] for p in files])
     cmd_str = f'rclone copy {run_path} {name}:{out_path} --transfers=4 --config={config_path} --files-from-raw -'
     cmd_list = shlex.split(cmd_str)
-    p = subprocess.run(cmd_list, input=dl_files_str, capture_output=True, text=True, check=False)
+    p = subprocess.run(cmd_list, input=files_str, capture_output=True, text=True, check=False)
     if p.stderr == '':
-        for dl_file in dl_files:
-            os.remove(dl_file)
-
+        for file in files:
+            os.remove(file)
 
 
 def monitor_wrf():
@@ -108,14 +107,15 @@ def monitor_wrf():
     while check is None:
         out_files = query_out_files(run_path)
 
-        dl_files = select_files_to_dl(out_files, 1)
+        files = select_files_to_dl(out_files, 1)
 
-        if dl_files:
-            files_str = ', '.join([p.split('/')[-1] for p in dl_files])
+        if files:
+            files_str = ', '.join([os.path.split(p)[-1] for p in files])
             print(f'-- Uploading files: {files_str}')
-            dl_files(dl_files, run_path, name, out_path, config_path)
+            dl_files(files, run_path, name, out_path, config_path)
+            print('-- Upload successful')
 
-        sleep(120)
+        sleep(60)
         check = p.poll()
 
     wrf_log_path = run_path.joinpath('rsl.out.0000')
@@ -124,12 +124,13 @@ def monitor_wrf():
     if 'SUCCESS COMPLETE WRF' in results_str:
         out_files = query_out_files(run_path)
 
-        dl_files = select_files_to_dl(out_files, 0)
+        files = select_files_to_dl(out_files, 0)
 
-        if dl_files:
-            files_str = ', '.join([p.split('/')[-1] for p in dl_files])
+        if files:
+            files_str = ', '.join([p.split('/')[-1] for p in files])
             print(f'-- Uploading files: {files_str}')
-            dl_files(dl_files, run_path, name, out_path, config_path)
+            dl_files(files, run_path, name, out_path, config_path)
+            print('-- Upload successful')
 
         return True
     else:
