@@ -8,6 +8,6 @@ wrf_exe_path=$(toml get --toml-path parameters.toml executables.wrf_path)/main/w
 cd $(toml get --toml-path parameters.toml data_path)
 
 # echo $n_cores $wrf_exe_path
-nohup mpirun -np $n_cores $wrf_exe_path &
+mpirun -np $n_cores $wrf_exe_path
 
 uv run monitor_wrf.py

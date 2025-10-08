@@ -134,6 +134,11 @@ def monitor_wrf():
 
         return True
     else:
+        cmd_str = 'grep cfl rsl.error*'
+        cmd_list = shlex.split(cmd_str)
+        pe = subprocess.run(cmd_list, capture_output=True, text=True, cwd=run_path)
+        if pe.stdout != '':
+            results_str = pe.stdout
         scope = sentry_sdk.get_current_scope()
         scope.add_attachment(path=wrf_log_path)
         raise ValueError(f'wrf.exe failed. Look at the rsl.out.0000 file for details: {results_str}')
