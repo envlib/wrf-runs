@@ -42,7 +42,10 @@ def run_real():
             path.unlink()
 
         run_path = params.data_path.joinpath('run')
-        run_path.mkdir(exist_ok=True)
+        if run_path.exists():
+            shutil.rmtree(run_path)
+
+        run_path.mkdir()
         wrf_run_path = params.wrf_path.joinpath('run')
         cmd_str = f'ln -sf {wrf_run_path}/* .'
         # cmd_list = shlex.split(cmd_str)

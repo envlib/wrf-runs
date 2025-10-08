@@ -1,5 +1,9 @@
 #!/bin/bash -e
 # This should be run in the data path
+#SBATCH --job-name=wrf1
+#SBATCH --time=6:00:00
+#SBATCH --ntasks=24
+#SBATCH --hint=nomultithread
 
 uv run main.py
 
@@ -8,7 +12,11 @@ n_cores=16
 
 cd run
 
+module purge 2> /dev/null
+# module load netCDF-Fortran/4.6.1-gompi-2024a
+module list
+
 # echo $n_cores $wrf_exe_path
-mpirun -np $n_cores ./wrf.exe
+srun --kill-on-bad-exit --output=wrf.log ./wrf.exe
 
 uv run upload_wrfout.py
