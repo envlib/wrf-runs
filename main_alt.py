@@ -52,10 +52,10 @@ run_era5_to_int(start_date, end_date, hour_interval)
 print('-- Running metgrid.exe...')
 run_metgrid()
 
-print('-- Running real.exe...')
-run_real()
+# print('-- Running real.exe...')
+# run_real()
 
-print('-- Running WRF...')
+# print('-- Running WRF...')
 # monitor_wrf()
 
 
