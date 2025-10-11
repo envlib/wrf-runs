@@ -23,11 +23,11 @@ import params
 ### Functions
 
 
-def run_real():
+def run_real(del_old=True):
     """
 
     """
-    cmd_str = f'{params.real_exe}'
+    cmd_str = f'mpirun -n 4 {params.real_exe}'
     cmd_list = shlex.split(cmd_str)
     p = subprocess.run(cmd_list, capture_output=False, text=False, check=False, cwd=params.data_path)
 
@@ -38,8 +38,9 @@ def run_real():
         results_str = f.read()
 
     if 'SUCCESS COMPLETE REAL_EM INIT' in results_str:
-        for path in params.data_path.glob('met_em.*.nc'):
-            path.unlink()
+        if del_old:
+            for path in params.data_path.glob('met_em.*.nc'):
+                path.unlink()
 
         run_path = params.data_path.joinpath('run')
         if run_path.exists():

@@ -23,7 +23,7 @@ import params
 ### Functions
 
 
-def run_era5_to_int(start_date, end_date, hour_interval):
+def run_era5_to_int(start_date, end_date, hour_interval, del_old=True):
     """
 
     """
@@ -36,7 +36,8 @@ def run_era5_to_int(start_date, end_date, hour_interval):
     if p.stderr != '':
         raise ValueError(p.stderr)
     else:
-        shutil.rmtree(era5_path)
+        if del_old:
+            shutil.rmtree(era5_path)
         return True
 
 

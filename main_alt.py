@@ -47,13 +47,13 @@ print('-- Downloading ERA5 data...')
 era5_check = dl_era5(start_date, end_date)
 
 print('-- Processing ERA5 to WPS Int...')
-run_era5_to_int(start_date, end_date, hour_interval)
+run_era5_to_int(start_date, end_date, hour_interval, False)
 
 print('-- Running metgrid.exe...')
-run_metgrid()
+run_metgrid(False)
 
 # print('-- Running real.exe...')
-# run_real()
+run_real(False)
 
 # print('-- Running WRF...')
 # monitor_wrf()

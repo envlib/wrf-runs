@@ -23,7 +23,7 @@ import params
 ### Functions
 
 
-def run_metgrid():
+def run_metgrid(del_old=True):
     """
 
     """
@@ -32,8 +32,9 @@ def run_metgrid():
     p = subprocess.run(cmd_list, capture_output=True, text=True, check=False, cwd=params.data_path)
 
     if 'Successful completion of metgrid.' in p.stdout:
-        for path in params.data_path.glob('ERA5:*'):
-            path.unlink()
+        if del_old:
+            for path in params.data_path.glob('ERA5:*'):
+                path.unlink()
         return True
     else:
         scope = sentry_sdk.get_current_scope()
