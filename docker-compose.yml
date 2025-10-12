@@ -6,5 +6,5 @@ services:
     # user: ${MY_UID}:${MY_GID}
     volumes:
         - "~/git/wrf-repos/wrf-runs/parameters.toml:/app/parameters.toml"
-        # - '~/data/wrf/tests/test1:/data'
+        # - '~/data/wrf/tests/test2:/data'
 
