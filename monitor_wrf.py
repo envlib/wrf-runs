@@ -21,7 +21,7 @@ import params
 
 
 
-out_files_glob = ('wrfout_*',)
+out_files_glob = ('wrfout_*', 'wrfzlevels_d*')
 
 
 ###########################################
