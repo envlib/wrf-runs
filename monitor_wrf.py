@@ -90,10 +90,13 @@ def monitor_wrf():
     """
     remote = copy.deepcopy(params.file['remote']['output'])
 
-    out_path = pathlib.Path(remote.pop('path'))
-
-    name = 'output'
-    config_path = params.create_rclone_config(name, params.data_path, remote)
+    if 'path' in remote:
+        out_path = pathlib.Path(remote.pop('path'))
+    
+        name = 'output'
+        config_path = params.create_rclone_config(name, params.data_path, remote)
+    else:
+        out_path = None
 
     run_path = params.data_path.joinpath('run')
 
@@ -109,7 +112,7 @@ def monitor_wrf():
 
         files = select_files_to_dl(out_files, 1)
 
-        if files:
+        if files and out_path is not None:
             files_str = ', '.join([os.path.split(p)[-1] for p in files])
             print(f'-- Uploading files: {files_str}')
             dl_files(files, run_path, name, out_path, config_path)
@@ -126,7 +129,7 @@ def monitor_wrf():
 
         files = select_files_to_dl(out_files, 0)
 
-        if files:
+        if files and out_path is not None:
             files_str = ', '.join([p.split('/')[-1] for p in files])
             print(f'-- Uploading files: {files_str}')
             dl_files(files, run_path, name, out_path, config_path)
