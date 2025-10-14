@@ -12,6 +12,7 @@ from run_era5_to_int import run_era5_to_int
 from run_metgrid import run_metgrid
 from run_real import run_real
 from monitor_wrf import monitor_wrf
+import pendulum
 
 import params
 
@@ -36,6 +37,10 @@ if sentry['tags']:
 ########################################
 ### Run sequence
 
+start_time = pendulum.now()
+
+print(f"-- start time: {start_time.format('YYYY-MM-DD HH:mm:ss')}")
+
 print('-- Downloading namelists...')
 dl_check = dl_nml_domain()
 
@@ -58,13 +63,15 @@ run_real()
 print('-- Running WRF...')
 monitor_wrf()
 
+end_time = pendulum.now()
 
+print(f"-- end time: {end_time.format('YYYY-MM-DD HH:mm:ss')}")
 
+diff = end_time - start_time
 
+mins = round(diff.total_minutes())
 
-
-
-
+print(f"-- Total run minutes: {mins}")
 
 
 
