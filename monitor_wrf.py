@@ -21,7 +21,10 @@ import params
 
 
 
-out_files_glob = ('wrfout_*', 'wrfzlevels_d*')
+out_files_glob = {'wrfout': 'wrfout_d*',
+                  'zlevel': 'wrfzlevels_d*',
+                  'summ': 'wrfxtrm_d*',
+                  }
 
 
 ###########################################
@@ -39,12 +42,12 @@ def read_last_line(file_path):
     return p.stdout.strip('\n')
 
 
-def query_out_files(run_path):
+def query_out_files(run_path, output_globs):
     """
 
     """
     out_files = {}
-    for glob in out_files_glob:
+    for glob in output_globs:
         for file_path in run_path.glob(glob):
             file_name = file_path.name
             out_name, domain, datetime = file_name.split('_', 2)
@@ -57,7 +60,7 @@ def query_out_files(run_path):
     return out_files
 
 
-def select_files_to_dl(out_files, min_files):
+def select_files_to_ul(out_files, min_files):
     """
 
     """
@@ -71,20 +74,31 @@ def select_files_to_dl(out_files, min_files):
     return files
 
 
-def dl_files(files, run_path, name, out_path, config_path):
+def ul_files(files, run_path, name, out_path, config_path):
     """
 
     """
     files_str = '\n'.join([os.path.split(p)[-1] for p in files])
+    print(f'-- Uploading files:\n{files_str}')
+
     cmd_str = f'rclone copy {run_path} {name}:{out_path} --transfers=4 --config={config_path} --files-from-raw -'
     cmd_list = shlex.split(cmd_str)
+
+    start_ul = pendulum.now()
     p = subprocess.run(cmd_list, input=files_str, capture_output=True, text=True, check=False)
+    end_ul = pendulum.now()
+
+    diff = end_ul - start_ul
+
+    mins = round(diff.total_minutes(), 1)
+
     if p.stderr == '':
         for file in files:
             os.remove(file)
+        print(f'-- Upload successful in {mins} mins')
 
 
-def monitor_wrf():
+def monitor_wrf(outputs, end_date):
     """
 
     """
@@ -98,6 +112,8 @@ def monitor_wrf():
     else:
         out_path = None
 
+    output_globs = [out_files_glob[op] for op in outputs]
+
     run_path = params.data_path.joinpath('run')
 
     n_cores = params.file['n_cores']
@@ -108,15 +124,12 @@ def monitor_wrf():
 
     check = p.poll()
     while check is None:
-        out_files = query_out_files(run_path)
+        out_files = query_out_files(run_path, output_globs)
 
-        files = select_files_to_dl(out_files, 1)
+        files = select_files_to_ul(out_files, 1)
 
         if files and out_path is not None:
-            files_str = ', '.join([os.path.split(p)[-1] for p in files])
-            print(f'-- Uploading files: {files_str}')
-            dl_files(files, run_path, name, out_path, config_path)
-            print('-- Upload successful')
+            ul_files(files, run_path, name, out_path, config_path)
 
         sleep(60)
         check = p.poll()
@@ -127,13 +140,13 @@ def monitor_wrf():
     if 'SUCCESS COMPLETE WRF' in results_str:
         out_files = query_out_files(run_path)
 
-        files = select_files_to_dl(out_files, 0)
+        if end_date.hour == 0:
+            files = select_files_to_ul(out_files, 1)
+        else:
+            files = select_files_to_ul(out_files, 0)
 
         if files and out_path is not None:
-            files_str = ', '.join([p.split('/')[-1] for p in files])
-            print(f'-- Uploading files: {files_str}')
-            dl_files(files, run_path, name, out_path, config_path)
-            print('-- Upload successful')
+            ul_files(files, run_path, name, out_path, config_path)
 
         return True
     else:

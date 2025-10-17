@@ -60,7 +60,7 @@ def dl_era5(start_date, end_date):
     days = pendulum.interval(start_date1, end_date1).range('days')
 
     for day in days:
-        month_str = month.format('YYYYMM')
+        month_str = day.format('YYYYMM')
         day_str = day.format('DD')
 
         include_from += f'e5.oper.an.pl/{month_str}/*.{month_str}{day_str}00_*.nc\n'

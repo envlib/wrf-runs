@@ -39,7 +39,7 @@ if sentry['tags']:
 print('-- Downloading namelists...')
 dl_check = dl_nml_domain()
 
-start_date, end_date, hour_interval = check_set_params()
+start_date, end_date, hour_interval, outputs = check_set_params()
 
 print(f'start date: {start_date}, end date: {end_date}, input hour interval: {hour_interval}')
 
