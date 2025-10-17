@@ -138,7 +138,7 @@ def monitor_wrf(outputs, end_date):
     results_str = read_last_line(wrf_log_path)
 
     if 'SUCCESS COMPLETE WRF' in results_str:
-        out_files = query_out_files(run_path)
+        out_files = query_out_files(run_path, output_globs)
 
         if end_date.hour == 0:
             files = select_files_to_ul(out_files, 1)
