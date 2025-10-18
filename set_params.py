@@ -8,27 +8,13 @@ Created on Mon Sep 22 17:21:47 2025
 import pathlib
 import f90nml
 from datetime import datetime, timedelta
+
 import params
 
 
 ################################################
-### Parameters
+### function
 
-geogrid_arrays = ['parent_id', 'parent_grid_ratio', 'i_parent_start', 'j_parent_start', 'e_we', 'e_sn', 'geog_data_res']
-
-# wps_array_fields = {
-#     'geogrid': ['parent_id', 'parent_grid_ratio', 'i_parent_start', 'j_parent_start', 'e_we', 'e_sn', 'geog_data_res'],
-
-#     }
-
-# wrf_array_fields = {
-#     'domains': ['grid_id', 'parent_id', 'parent_grid_ratio', 'i_parent_start', 'j_parent_start', 'e_we', 'e_sn', 'e_vert', 'parent_time_step_ratio'],
-
-#     }
-
-domain_array_fields = ('parent_id', 'parent_grid_ratio', 'i_parent_start', 'j_parent_start', 'e_we', 'e_sn', 'geog_data_res', 'e_vert', 'parent_time_step_ratio')
-
-wps_date_format = '%Y-%m-%d_%H:%M:%S'
 
 
 def check_set_params():
@@ -62,30 +48,6 @@ def check_set_params():
     wrf_nml = f90nml.read(params.wrf_nml_path)
 
     n_domains = wps_nml['share']['max_dom']
-
-    # ## domains
-    # wps_domains = wps_nml['geogrid']
-    # wrf_domains = wrf_nml['domains']
-
-    # for k, v in wps_domains.items():
-    #     if k in domain_array_fields:
-    #         if len(v) != n_domains:
-    #             raise ValueError(f'The field {k} must be an array with {n_domains} values.')
-    #     if k in ('e_we', 'e_sn'):
-    #         for i in v:
-    #             if i < 100:
-    #                 raise ValueError('The number of grid points in the domain must be greater than or equal to 100.')
-
-    # for k, v in wrf_domains.items():
-    #     if k in domain_array_fields:
-    #         if len(v) != n_domains:
-    #             raise ValueError(f'The field {k} must be an array with {n_domains} values.')
-
-    # for k, v in wps_domains.items():
-    #     if k in wrf_domains:
-    #         wrf_v = wrf_domains[k]
-    #         if wrf_v != v:
-    #             raise ValueError(f'The field {k} in both the wps and wrf namelists are not the same.')
 
 
     #########################################
@@ -122,8 +84,8 @@ def check_set_params():
 
     start_date = start_date - timedelta(minutes=history_begin)
 
-    wps_nml['share']['start_date'] = [start_date.strftime(wps_date_format)] * n_domains
-    wps_nml['share']['end_date'] = [end_date.strftime(wps_date_format)] * n_domains
+    wps_nml['share']['start_date'] = [start_date.strftime(params.wps_date_format)] * n_domains
+    wps_nml['share']['end_date'] = [end_date.strftime(params.wps_date_format)] * n_domains
 
     wrf_nml['time_control']['start_year'] = [start_date.year] * n_domains
     wrf_nml['time_control']['start_month'] = [start_date.month] * n_domains

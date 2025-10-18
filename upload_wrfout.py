@@ -15,6 +15,7 @@ import sentry_sdk
 from time import sleep
 
 import params
+import utils
 
 ############################################
 ### Parameters
@@ -26,62 +27,6 @@ out_files_glob = ('wrfout_*',)
 
 ###########################################
 ### Functions
-
-
-def read_last_line(file_path):
-    """
-
-    """
-    cmd_str = f'tail -1 {file_path}'
-    cmd_list = shlex.split(cmd_str)
-    p = subprocess.run(cmd_list, capture_output=True, text=True, check=False)
-
-    return p.stdout.strip('\n')
-
-
-def query_out_files(run_path):
-    """
-
-    """
-    out_files = {}
-    for glob in out_files_glob:
-        for file_path in run_path.glob(glob):
-            file_name = file_path.name
-            out_name, domain, datetime = file_name.split('_', 2)
-            if (out_name, domain) in out_files:
-                out_files[(out_name, domain)].append(str(file_path))
-                out_files[(out_name, domain)].sort()
-            else:
-                out_files[(out_name, domain)] = [str(file_path)]
-
-    return out_files
-
-
-def select_files_to_dl(out_files, min_files):
-    """
-
-    """
-    files = []
-    for grp, file_paths in out_files.items():
-        n_files = len(file_paths)
-        file_paths.sort(reverse=True)
-        if n_files > min_files:
-            files.extend(file_paths[min_files:n_files])
-
-    return files
-
-
-def dl_files(files, run_path, name, out_path, config_path):
-    """
-
-    """
-    files_str = '\n'.join([os.path.split(p)[-1] for p in files])
-    cmd_str = f'rclone copy {run_path} {name}:{out_path} --transfers=4 --config={config_path} --files-from-raw -'
-    cmd_list = shlex.split(cmd_str)
-    p = subprocess.run(cmd_list, input=files_str, capture_output=True, text=True, check=False)
-    if p.stderr == '':
-        for file in files:
-            os.remove(file)
 
 
 def upload_wrfout():
@@ -98,17 +43,17 @@ def upload_wrfout():
     run_path = params.data_path.joinpath('run')
 
     wrf_log_path = run_path.joinpath('rsl.out.0000')
-    results_str = read_last_line(wrf_log_path)
+    results_str = utils.read_last_line(wrf_log_path)
 
     if 'SUCCESS COMPLETE WRF' in results_str:
-        out_files = query_out_files(run_path)
+        out_files = utils.query_out_files(run_path)
 
-        files = select_files_to_dl(out_files, 0)
+        files = utils.select_files_to_dl(out_files, 0)
 
         if files:
             files_str = ', '.join([p.split('/')[-1] for p in files])
             print(f'-- Uploading files: {files_str}')
-            dl_files(files, run_path, name, out_path, config_path)
+            utils.dl_files(files, run_path, name, out_path, config_path)
             print('-- Upload successful')
 
         return True
