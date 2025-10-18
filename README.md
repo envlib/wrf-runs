@@ -1,2 +1,3 @@
-# wrf-runs
-Scripts to run wrf
+# wrf-era5-runs
+A docker image to run WRF over a fixed period of time. The preprocessing must have been performed by the wrf-preprocessing docker image.
+More documentation to come...
