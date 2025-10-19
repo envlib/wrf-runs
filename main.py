@@ -45,6 +45,8 @@ sentry_sdk.set_tags({'run_uuid': run_uuid})
 
 start_time = pendulum.now()
 
+print(f'--  run uuid: {run_uuid}')
+
 print(f"-- start time: {start_time.format('YYYY-MM-DD HH:mm:ss')}")
 
 print('-- Downloading namelists...')
@@ -67,7 +69,7 @@ print('-- Running metgrid.exe...')
 run_metgrid()
 
 print('-- Running real.exe...')
-run_real()
+run_real(run_uuid)
 
 print('-- Running WRF...')
 monitor_wrf(outputs, end_date, run_uuid)

@@ -13,7 +13,7 @@ import subprocess
 import pendulum
 import copy
 
-import params
+import params, utils
 
 ############################################
 ### Parameters
@@ -34,7 +34,7 @@ def dl_era5(start_date, end_date):
 
     name = 'era5'
 
-    config_path = params.create_rclone_config(name, params.data_path, remote)
+    config_path = utils.create_rclone_config(name, params.data_path, remote)
 
     start_date1 = pendulum.instance(start_date)
     end_date1 = pendulum.instance(end_date)

@@ -11,7 +11,7 @@ import shlex
 import subprocess
 import copy
 
-import params
+import params, utils
 
 ############################################
 ### Parameters
@@ -32,7 +32,7 @@ def upload_namelists(run_uuid):
         out_path = pathlib.Path(remote.pop('path'))
 
         name = 'output'
-        config_path = params.create_rclone_config(name, params.data_path, remote)
+        config_path = utils.create_rclone_config(name, params.data_path, remote)
 
         dest_str = f'{name}:{out_path}/namelists/{run_uuid}/'
         cmd_str = f'rclone copy {params.data_path} {dest_str} --config={config_path} --include "namelist.*"'
